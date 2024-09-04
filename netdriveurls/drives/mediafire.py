@@ -15,7 +15,12 @@ class MediaFireLinkInvalidError(ResourceInvalidError):
 
 class MediaFireDownloadSession(StandaloneFileNetDriveDownloadSession):
     def __init__(self, page_url: str):
+        StandaloneFileNetDriveDownloadSession.__init__(self)
         self.page_url = page_url
+
+    def _get_resource_id(self) -> str:
+        id_ = urlsplit(self.page_url).path_segments[2]
+        return f'mediafire_{id_}'
 
     def download_to_directory(self, dst_dir: str):
         url = self.page_url

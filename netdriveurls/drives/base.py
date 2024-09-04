@@ -17,6 +17,18 @@ class ResourceConstraintError(Exception):
 
 
 class NetDriveDownloadSession:
+    def __init__(self):
+        self._resource_id = None
+
+    @property
+    def resource_id(self) -> str:
+        if self._resource_id is None:
+            self._resource_id = self._get_resource_id()
+        return self._resource_id
+
+    def _get_resource_id(self) -> str:
+        raise NotImplementedError  # pragma: no cover
+
     def download_to_directory(self, dst_dir: str):
         raise NotImplementedError  # pragma: no cover
 
@@ -29,8 +41,14 @@ class NetDriveDownloadSession:
     def is_valid_url(cls, url: str) -> bool:
         raise NotImplementedError  # pragma: no cover
 
+    def __repr__(self):
+        return f'<{self.__class__.__name__} id: {self.resource_id!r}>'
+
 
 class StandaloneFileNetDriveDownloadSession(NetDriveDownloadSession):
+    def _get_resource_id(self) -> str:
+        raise NotImplementedError  # pragma: no cover
+
     def download_to_file(self, dst_file: str):
         with TemporaryDirectory() as td:
             self.download_to_directory(dst_dir=td)
