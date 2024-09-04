@@ -1,0 +1,6 @@
+hbutils>=0.10.0
+tqdm
+requests
+click>=7
+natsort
+urlobject
