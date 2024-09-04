@@ -4,3 +4,5 @@ requests
 click>=7
 natsort
 urlobject
+pyrfc6266
+random_user_agent
