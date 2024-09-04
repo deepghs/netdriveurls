@@ -1,6 +1,7 @@
 from typing import Type, List, Union
 
 from .base import NetDriveDownloadSession, ResourceInvalidError, StandaloneFileNetDriveDownloadSession
+from .cyberdrop import CyberDropArchiveDownloadSession, CyberDropFileDownloadSession
 from .dropbox import DropBoxFileDownloadSession, DropBoxFolderDownloadSession
 from .gofile import GoFileFolderDownloadSession
 from .mediafire import MediaFireDownloadSession
@@ -17,6 +18,8 @@ register_net_drive(MediaFireDownloadSession)
 register_net_drive(DropBoxFolderDownloadSession)
 register_net_drive(DropBoxFileDownloadSession)
 register_net_drive(GoFileFolderDownloadSession)
+register_net_drive(CyberDropFileDownloadSession)
+register_net_drive(CyberDropArchiveDownloadSession)
 
 
 def from_url(url: str) -> Union[NetDriveDownloadSession, StandaloneFileNetDriveDownloadSession]:

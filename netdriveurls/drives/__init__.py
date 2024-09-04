@@ -2,4 +2,5 @@ from .base import ResourceUnrecognizableError, ResourceInvalidError, ResourceCon
     StandaloneFileNetDriveDownloadSession
 from .dispatch import register_net_drive, from_url
 from .dropbox import DropBoxFolderDownloadSession, DropBoxFileDownloadSession, get_direct_url_for_dropbox
+from .gofile import GoFileFolderDownloadSession, get_direct_urls_for_gofile_folder
 from .mediafire import MediaFireLinkInvalidError, MediaFireDownloadSession, get_direct_url_and_filename_for_mediafire

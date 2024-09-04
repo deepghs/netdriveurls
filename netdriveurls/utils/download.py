@@ -51,7 +51,7 @@ def download_file(url, filename=None, output_directory=None,
             raise requests.exceptions.HTTPError(f"Downloaded file is not of expected size, "
                                                 f"{expected_size} expected but {actual_size} found.")
     except BaseException:
-        # os.remove(filename)
+        os.remove(filename)
         raise
 
     return filename

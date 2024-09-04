@@ -11,6 +11,7 @@ from typing import Optional, Dict, Tuple, List
 import requests
 from hbutils.string import plural_word
 from hbutils.system import urlsplit
+from tqdm import tqdm
 
 from .base import NetDriveDownloadSession, ResourceDownloadError
 from ..utils import get_requests_session, download_file
@@ -116,6 +117,9 @@ class GoFileFolderDownloadSession(NetDriveDownloadSession):
         session = get_requests_session()
         errors = []
 
+        all_items = get_direct_urls_for_gofile_folder(self.page_url, token=token, session=session)
+        pg = tqdm(total=len(all_items))
+
         def _download_file(url, dst_file, size, md5_expected):
             try:
                 download_file(url, filename=dst_file, expected_size=size,
@@ -133,11 +137,14 @@ class GoFileFolderDownloadSession(NetDriveDownloadSession):
             except Exception as err:
                 logging.exception(f'Error when downloading {url!r} to {dst_file!r} ...')
                 errors.append(err)
+                if os.path.exists(dst_file):
+                    os.remove(dst_file)
                 raise
+            finally:
+                pg.update()
 
         tp = ThreadPoolExecutor(max_workers=12)
-        for segs, url, expected_size, expected_md5 in \
-                get_direct_urls_for_gofile_folder(self.page_url, token=token, session=session):
+        for segs, url, expected_size, expected_md5 in all_items:
             dst_path = os.path.join(dst_dir, *segs)
             tp.submit(_download_file, url, dst_path, expected_size, expected_md5)
         tp.shutdown(wait=True)
