@@ -16,6 +16,10 @@ class ResourceConstraintError(Exception):
     pass
 
 
+class ResourceDownloadError(Exception):
+    pass
+
+
 class NetDriveDownloadSession:
     def __init__(self):
         self._resource_id = None

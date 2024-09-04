@@ -10,8 +10,12 @@ from .base import StandaloneFileNetDriveDownloadSession, NetDriveDownloadSession
 from ..utils import download_file
 
 
+def get_direct_url_for_dropbox(url: str) -> str:
+    return str(URLObject(url).set_query_param('dl', '1'))
+
+
 def _download_url(url: str, dst_dir: str):
-    download_url = URLObject(url).set_query_param('dl', '1')
+    download_url = get_direct_url_for_dropbox(url)
     target_file = download_file(download_url, output_directory=dst_dir)
     return target_file
 

@@ -39,16 +39,19 @@ def download_file(url, filename=None, output_directory=None,
     if directory:
         os.makedirs(directory, exist_ok=True)
 
-    with open(filename, 'wb') as f:
-        with _with_tqdm(expected_size, desc, silent) as pbar:
-            for chunk in response.iter_content(chunk_size=1024):
-                f.write(chunk)
-                pbar.update(len(chunk))
+    try:
+        with open(filename, 'wb') as f:
+            with _with_tqdm(expected_size, desc, silent) as pbar:
+                for chunk in response.iter_content(chunk_size=1024):
+                    f.write(chunk)
+                    pbar.update(len(chunk))
 
-    actual_size = os.path.getsize(filename)
-    if expected_size is not None and actual_size != expected_size:
-        os.remove(filename)
-        raise requests.exceptions.HTTPError(f"Downloaded file is not of expected size, "
-                                            f"{expected_size} expected but {actual_size} found.")
+        actual_size = os.path.getsize(filename)
+        if expected_size is not None and actual_size != expected_size:
+            raise requests.exceptions.HTTPError(f"Downloaded file is not of expected size, "
+                                                f"{expected_size} expected but {actual_size} found.")
+    except BaseException:
+        # os.remove(filename)
+        raise
 
     return filename
