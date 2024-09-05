@@ -6,3 +6,4 @@ natsort
 urlobject
 pyrfc6266
 random_user_agent
+pyquery

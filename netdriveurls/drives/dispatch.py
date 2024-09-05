@@ -7,6 +7,7 @@ from .gofile import GoFileFolderDownloadSession
 from .ibb import IbbFileDownloadSession
 from .jpg5su import JPG5SuFileDownloadSession, JPG5SuAlbumDownloadSession
 from .mediafire import MediaFireDownloadSession
+from .saint2 import Saint2EmbedDownloadSession
 from ..resolve import resolve_url
 
 _KNOWN_SESSIONS: List[Type[NetDriveDownloadSession]] = []
@@ -25,6 +26,7 @@ register_net_drive(CyberDropArchiveDownloadSession)
 register_net_drive(JPG5SuFileDownloadSession)
 register_net_drive(JPG5SuAlbumDownloadSession)
 register_net_drive(IbbFileDownloadSession)
+register_net_drive(Saint2EmbedDownloadSession)
 
 
 def from_url(url: str) -> Union[NetDriveDownloadSession, StandaloneFileNetDriveDownloadSession]:
