@@ -4,6 +4,7 @@ from .base import NetDriveDownloadSession, ResourceInvalidError, StandaloneFileN
 from .cyberdrop import CyberDropArchiveDownloadSession, CyberDropFileDownloadSession
 from .dropbox import DropBoxFileDownloadSession, DropBoxFolderDownloadSession
 from .gofile import GoFileFolderDownloadSession
+from .ibb import IbbFileDownloadSession
 from .jpg5su import JPG5SuFileDownloadSession, JPG5SuAlbumDownloadSession
 from .mediafire import MediaFireDownloadSession
 from ..resolve import resolve_url
@@ -23,6 +24,7 @@ register_net_drive(CyberDropFileDownloadSession)
 register_net_drive(CyberDropArchiveDownloadSession)
 register_net_drive(JPG5SuFileDownloadSession)
 register_net_drive(JPG5SuAlbumDownloadSession)
+register_net_drive(IbbFileDownloadSession)
 
 
 def from_url(url: str) -> Union[NetDriveDownloadSession, StandaloneFileNetDriveDownloadSession]:
