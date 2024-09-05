@@ -27,6 +27,7 @@ def download_file(url, filename=None, output_directory=None,
                   **kwargs):
     session = session or get_requests_session()
     response = session.get(url, stream=True, allow_redirects=True, **kwargs)
+    response.raise_for_status()
     expected_size = expected_size or response.headers.get('Content-Length', None)
     if filename is None:
         filename = pyrfc6266.parse_filename(response.headers.get('Content-Disposition'))

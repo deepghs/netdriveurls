@@ -13,8 +13,12 @@ from hbutils.string import plural_word
 from hbutils.system import urlsplit
 from tqdm import tqdm
 
-from .base import NetDriveDownloadSession, ResourceDownloadError
+from .base import NetDriveDownloadSession, ResourceDownloadError, ResourceInvalidError
 from ..utils import get_requests_session, download_file
+
+
+class GoFileLinkInvalidError(ResourceInvalidError):
+    pass
 
 
 @lru_cache()
@@ -100,6 +104,8 @@ def get_direct_urls_for_gofile_folder(
     )
     resp.raise_for_status()
 
+    if resp.json()['status'] != 'ok':
+        raise GoFileLinkInvalidError(f'Resource not exist - {url!r}.')
     return _extract_files(resp.json()['data'])
 
 

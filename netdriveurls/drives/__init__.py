@@ -5,5 +5,6 @@ from .cyberdrop import CyberDropArchiveDownloadSession, CyberDropFileDownloadSes
 from .dispatch import register_net_drive, from_url
 from .dropbox import DropBoxFolderDownloadSession, DropBoxFileDownloadSession, get_direct_url_for_dropbox
 from .gofile import GoFileFolderDownloadSession, get_direct_urls_for_gofile_folder
-from .jpg5su import JPG5SuFileDownloadSession, get_direct_url_for_jpg5su
+from .jpg5su import JPG5SuFileDownloadSession, get_direct_url_for_jpg5su, JPG5SuAlbumDownloadSession, \
+    get_file_urls_for_jpg5su, get_og_image_url
 from .mediafire import MediaFireLinkInvalidError, MediaFireDownloadSession, get_direct_url_and_filename_for_mediafire
