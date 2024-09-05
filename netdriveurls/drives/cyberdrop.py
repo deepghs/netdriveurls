@@ -9,6 +9,7 @@ from hbutils.string import plural_word
 from hbutils.system import urlsplit
 from pyquery import PyQuery as pq
 from tqdm import tqdm
+from urlobject import URLObject
 
 from .base import StandaloneFileNetDriveDownloadSession, NetDriveDownloadSession, ResourceDownloadError
 from ..utils import get_requests_session, download_file
@@ -16,7 +17,7 @@ from ..utils import get_requests_session, download_file
 
 def get_file_links_for_cyberdrop(url: str, session: Optional[requests.Session] = None):
     split = urlsplit(url)
-    assert tuple(split.host.split('.')[-2:]) == ('cyberdrop', 'me'), f'Invalid host: {split.host!r}'
+    assert tuple(split.host.split('.')) == ('cyberdrop', 'me'), f'Invalid host: {split.host!r}'
     assert tuple(split.path_segments[1:2]) == ('a',), f'Invalid path: {url!r}'
 
     session = session or get_requests_session()
@@ -35,7 +36,7 @@ def get_file_links_for_cyberdrop(url: str, session: Optional[requests.Session] =
 
 def get_direct_file_link_for_cyberdrop(url: str, session: Optional[requests.Session] = None):
     split = urlsplit(url)
-    assert tuple(split.host.split('.')[-2:]) == ('cyberdrop', 'me'), f'Invalid host: {split.host!r}'
+    assert tuple(split.host.split('.')) == ('cyberdrop', 'me'), f'Invalid host: {split.host!r}'
     assert tuple(split.path_segments[1:2]) == ('f',), f'Invalid path: {url!r}'
 
     file_id = split.path_segments[2]
@@ -52,9 +53,25 @@ def get_direct_file_link_for_cyberdrop(url: str, session: Optional[requests.Sess
 class CyberDropFileDownloadSession(StandaloneFileNetDriveDownloadSession):
     def __init__(self, url):
         StandaloneFileNetDriveDownloadSession.__init__(self)
+        split = urlsplit(url)
+        if tuple(split.path_segments[1:2]) == ('e',):
+            obj = URLObject(url)
+            url = str(obj.with_path('/'.join(['', 'f', *obj.path.segments[1:]])))
+            need_resolve = False
+        elif tuple(split.path_segments[1:2]) == ('f',):
+            need_resolve = False
+        else:
+            need_resolve = True
         self.page_url = url
+        self._need_resolve = need_resolve
 
     def _get_resource_id(self) -> str:
+        if self._need_resolve:
+            session = get_requests_session()
+            url = urljoin(self.page_url, session.head(self.page_url).headers['Location'])
+            self.page_url = url
+            self._need_resolve = False
+
         split = urlsplit(self.page_url)
         return f'cyberdrop_file_{split.path_segments[2]}'
 
@@ -71,8 +88,8 @@ class CyberDropFileDownloadSession(StandaloneFileNetDriveDownloadSession):
     @classmethod
     def is_valid_url(cls, url: str) -> bool:
         split = urlsplit(url)
-        return tuple(split.host.split('.')[-2:]) == ('cyberdrop', 'me') and \
-            tuple(split.path_segments[1:2]) == ('f',)
+        return tuple(split.host.split('.')) == ('cyberdrop', 'me') and \
+            (tuple(split.path_segments[1:2]) in {('f',), ('e',)} or len(split.path_segments) == 2)
 
 
 class CyberDropArchiveDownloadSession(NetDriveDownloadSession):
@@ -121,5 +138,5 @@ class CyberDropArchiveDownloadSession(NetDriveDownloadSession):
     @classmethod
     def is_valid_url(cls, url: str) -> bool:
         split = urlsplit(url)
-        return tuple(split.host.split('.')[-2:]) == ('cyberdrop', 'me') and \
+        return tuple(split.host.split('.')) == ('cyberdrop', 'me') and \
             tuple(split.path_segments[1:2]) == ('a',)

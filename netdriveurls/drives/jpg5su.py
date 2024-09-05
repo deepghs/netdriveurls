@@ -26,7 +26,7 @@ def get_og_image_url(url: str, session: Optional[requests.Session] = None):
 
 def get_direct_url_for_jpg5su(url: str, session: Optional[requests.Session] = None):
     split = urlsplit(url)
-    assert tuple(split.host.split('.')[-2:]) == ('jpg5', 'su'), f'Invalid host: {split.host!r}'
+    assert tuple(split.host.split('.')[-2:]) in {('jpg5', 'su'), ('jpg4', 'su')}, f'Invalid host: {split.host!r}'
     assert tuple(split.path_segments[1:2]) == ('img',), f'Invalid path: {url!r}'
 
     return get_og_image_url(url, session=session)
@@ -34,7 +34,7 @@ def get_direct_url_for_jpg5su(url: str, session: Optional[requests.Session] = No
 
 def get_file_urls_for_jpg5su(url: str, session: Optional[requests.Session] = None):
     split = urlsplit(url)
-    assert tuple(split.host.split('.')[-2:]) == ('jpg5', 'su'), f'Invalid host: {split.host!r}'
+    assert tuple(split.host.split('.')[-2:]) in {('jpg5', 'su'), ('jpg4', 'su')}, f'Invalid host: {split.host!r}'
     assert tuple(split.path_segments[1:2]) == ('a',), f'Invalid path: {url!r}'
 
     session = session or get_requests_session()
@@ -82,7 +82,7 @@ class JPG5SuFileDownloadSession(StandaloneFileNetDriveDownloadSession):
     @classmethod
     def is_valid_url(cls, url: str) -> bool:
         split = urlsplit(url)
-        return tuple(split.host.split('.')[-2:]) == ('jpg5', 'su') and \
+        return tuple(split.host.split('.')[-2:]) in {('jpg5', 'su'), ('jpg4', 'su')} and \
             tuple(split.path_segments[1:2]) == ('img',)
 
 
@@ -135,5 +135,5 @@ class JPG5SuAlbumDownloadSession(NetDriveDownloadSession):
     @classmethod
     def is_valid_url(cls, url: str) -> bool:
         split = urlsplit(url)
-        return tuple(split.host.split('.')[-2:]) == ('jpg5', 'su') and \
+        return tuple(split.host.split('.')[-2:]) in {('jpg5', 'su'), ('jpg4', 'su')} and \
             tuple(split.path_segments[1:2]) == ('a',)
