@@ -3,6 +3,7 @@ from typing import List, Type, Iterator
 
 from .base import GenericResolver, URLRecognizableError, URLUnresolvableError
 from .cyberdrop import CyberDropEResolver, CyberDropDirectResolver
+from .dropbox import DropBoxSResolver, DropBoxSHResolver
 
 _KNOWN_RESOLVERS: List[Type[GenericResolver]] = []
 
@@ -13,6 +14,8 @@ def register_resolver(net_drive_cls: Type[GenericResolver]):
 
 register_resolver(CyberDropEResolver)
 register_resolver(CyberDropDirectResolver)
+register_resolver(DropBoxSResolver)
+register_resolver(DropBoxSHResolver)
 
 
 def _get_resolver_for_url(url: str) -> Type[GenericResolver]:
@@ -41,6 +44,15 @@ def _iter_resolve_all(url: str) -> Iterator[str]:
                 if next_url not in exist_ids:
                     exist_ids.add(next_url)
                     queue.append(next_url)
+
+
+def is_resolvable(url: str) -> bool:
+    try:
+        _get_resolver_for_url(url)
+    except URLRecognizableError:
+        return False
+    else:
+        return True
 
 
 def resolve_url_all(url: str) -> List[str]:
