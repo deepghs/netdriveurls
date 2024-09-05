@@ -8,6 +8,7 @@ from .gofile import GoFileFolderDownloadSession
 from .ibb import IbbFileDownloadSession
 from .jpg5su import JPG5SuFileDownloadSession, JPG5SuAlbumDownloadSession
 from .mediafire import MediaFireDownloadSession
+from .pixhost import PixHostShowDownloadSession, PixHostGalleryDownloadSession
 from .saint2 import Saint2EmbedDownloadSession
 from ..resolve import resolve_url
 
@@ -30,6 +31,8 @@ register_net_drive(IbbFileDownloadSession)
 register_net_drive(Saint2EmbedDownloadSession)
 register_net_drive(BunkrImageDownloadSession)
 register_net_drive(BunkrAlbumDownloadSession)
+register_net_drive(PixHostGalleryDownloadSession)
+register_net_drive(PixHostShowDownloadSession)
 
 
 def from_url(url: str) -> Union[NetDriveDownloadSession, StandaloneFileNetDriveDownloadSession]:
