@@ -73,6 +73,20 @@ def get_direct_url_for_bunkr_file(url: str, session: Optional[requests.Session] 
     return url
 
 
+def get_direct_url_for_bunkr(url: str, session: Optional[requests.Session] = None):
+    split = urlsplit(url)
+    assert tuple(split.host.split('.')[-2:-1]) in {('bunkr',), ('bunkrrr',)}, f'Invalid host: {split.host!r}'
+    sp = tuple(split.path_segments[1:2])
+    if sp == ('i',):
+        return get_direct_url_for_bunkr_image(url, session=session)
+    elif sp == ('v',):
+        return get_direct_url_for_bunkr_video(url, session=session)
+    elif sp == ('d',):
+        return get_direct_url_for_bunkr_file(url, session=session)
+    else:
+        assert False, f'Invalid path: {url!r}.'
+
+
 def get_file_urls_for_bunkr_album(url: str, session: Optional[requests.Session] = None):
     split = urlsplit(url)
     assert tuple(split.host.split('.')[-2:-1]) in {('bunkr',), ('bunkrrr',)}, f'Invalid host: {split.host!r}'
@@ -85,9 +99,10 @@ def get_file_urls_for_bunkr_album(url: str, session: Optional[requests.Session] 
     page = pq(resp.text)
     retval = []
     for item in page('.grid-images > div').items():
-        url = urljoin(resp.url, item('a').attr('href'))
-        title = item('.details > p:nth-child(1)').text().strip()
-        retval.append((title, url))
+        if item('a').attr('href'):
+            url = urljoin(resp.url, item('a').attr('href'))
+            title = item('.details > p:nth-child(1)').text().strip()
+            retval.append((title, url))
     return retval
 
 
@@ -188,7 +203,7 @@ class BunkrAlbumDownloadSession(NetDriveDownloadSession):
         def _download_file(file_url, fn):
             dst_file = None
             try:
-                url = get_direct_url_for_bunkr_image(file_url, session=session)
+                url = get_direct_url_for_bunkr(file_url, session=session)
                 dst_file = os.path.join(dst_dir, fn)
                 download_file(url, filename=dst_file, session=session)
             except Exception as err:
@@ -218,10 +233,3 @@ class BunkrAlbumDownloadSession(NetDriveDownloadSession):
         split = urlsplit(url)
         return tuple(split.host.split('.')[-2:-1]) in {('bunkr',), ('bunkrrr',)} and \
             tuple(split.path_segments[1:2]) == ('a',)
-
-
-if __name__ == '__main__':
-    # print(get_direct_url_for_bunkr('https://bunkr.ax/i/9050b0ac37c5379b258-c6EmqfmL.jpg'))
-    session = get_requests_session()
-    for title, url in tqdm(get_file_urls_for_bunkr_album('https://bunkr.fi/a/dS6kqYSY', session=session)):
-        print(title, url, get_direct_url_for_bunkr_image(url, session=session))
