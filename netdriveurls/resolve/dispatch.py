@@ -2,6 +2,7 @@ import logging
 from typing import List, Type, Iterator
 
 from .base import GenericResolver, URLRecognizableError, URLUnresolvableError
+from .bunkr import BunkrCDNResolver
 from .cyberdrop import CyberDropEResolver, CyberDropDirectResolver
 from .dropbox import DropBoxSResolver, DropBoxSHResolver
 
@@ -16,6 +17,7 @@ register_resolver(CyberDropEResolver)
 register_resolver(CyberDropDirectResolver)
 register_resolver(DropBoxSResolver)
 register_resolver(DropBoxSHResolver)
+register_resolver(BunkrCDNResolver)
 
 
 def _get_resolver_for_url(url: str) -> Type[GenericResolver]:

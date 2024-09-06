@@ -35,3 +35,14 @@ class StandaloneResolver(GenericResolver):
     @classmethod
     def is_solvable(cls, url: str) -> bool:
         raise NotImplementedError
+
+
+class URLRedirectSolver(StandaloneResolver):
+    @classmethod
+    def resolve(cls, url: str) -> str:
+        from .redirect import url_redirect
+        return url_redirect(url)
+
+    @classmethod
+    def is_solvable(cls, url: str) -> bool:
+        raise NotImplementedError
