@@ -15,7 +15,7 @@ from .base import ResourceInvalidError, StandaloneFileNetDriveDownloadSession, N
 from ..utils import get_requests_session, download_file
 
 
-def get_direct_url_for_bunkr(url: str, session: Optional[requests.Session] = None):
+def get_direct_url_for_bunkr_image(url: str, session: Optional[requests.Session] = None):
     split = urlsplit(url)
     assert tuple(split.host.split('.')[-2:-1]) in {('bunkr',), ('bunkrrr',)}, f'Invalid host: {split.host!r}'
     assert tuple(split.path_segments[1:2]) == ('i',), f'Invalid path: {url!r}'
@@ -30,6 +30,47 @@ def get_direct_url_for_bunkr(url: str, session: Optional[requests.Session] = Non
         return urljoin(resp.url, relurl)
     else:
         raise ResourceInvalidError(f'Failed to get image url from {url!r}.')
+
+
+def get_direct_url_for_bunkr_video(url: str, session: Optional[requests.Session] = None):
+    split = urlsplit(url)
+    assert tuple(split.host.split('.')[-2:-1]) in {('bunkr',), ('bunkrrr',)}, f'Invalid host: {split.host!r}'
+    assert tuple(split.path_segments[1:2]) == ('v',), f'Invalid path: {url!r}'
+
+    session = session or get_requests_session()
+    resp = session.get(url)
+    resp.raise_for_status()
+
+    page = pq(resp.text)
+    relurl = page('video#player source').attr('src')
+    if relurl:
+        return urljoin(resp.url, relurl)
+    else:
+        raise ResourceInvalidError(f'Failed to get video url from {url!r}.')
+
+
+def get_direct_url_for_bunkr_file(url: str, session: Optional[requests.Session] = None):
+    split = urlsplit(url)
+    assert tuple(split.host.split('.')[-2:-1]) in {('bunkr',), ('bunkrrr',)}, f'Invalid host: {split.host!r}'
+    assert tuple(split.path_segments[1:2]) == ('d',), f'Invalid path: {url!r}'
+
+    session = session or get_requests_session()
+    resp = session.get(url)
+    resp.raise_for_status()
+
+    page = pq(resp.text)
+    go_relurl = page('.mb-6 a').attr('href')
+    if not go_relurl:
+        raise ResourceInvalidError(f'Failed to get file url from {url!r}.')
+    go_url = urljoin(resp.url, go_relurl)
+
+    resp = session.get(go_url)
+    page = pq(resp.text)
+    relurl = page('.mt-3 a').attr('href')
+    if not relurl:
+        raise ResourceInvalidError(f'Failed to get file url from go url {go_url!r}.')
+    url = urljoin(resp.url, relurl)
+    return url
 
 
 def get_file_urls_for_bunkr_album(url: str, session: Optional[requests.Session] = None):
@@ -61,9 +102,8 @@ class BunkrImageDownloadSession(StandaloneFileNetDriveDownloadSession):
 
     def download_to_directory(self, dst_dir: str):
         session = get_requests_session()
-        url = get_direct_url_for_bunkr(self.page_url, session=session)
-        _, ext = os.path.splitext(urlsplit(url).filename.lower())
-        dst_file = os.path.join(dst_dir, f'{self.resource_id}{ext}')
+        url = get_direct_url_for_bunkr_image(self.page_url, session=session)
+        dst_file = os.path.join(dst_dir, urlsplit(url).filename)
         download_file(url, filename=dst_file, session=session)
 
     @classmethod
@@ -75,6 +115,58 @@ class BunkrImageDownloadSession(StandaloneFileNetDriveDownloadSession):
         split = urlsplit(url)
         return tuple(split.host.split('.')[-2:-1]) in {('bunkr',), ('bunkrrr',)} and \
             tuple(split.path_segments[1:2]) == ('i',)
+
+
+class BunkrVideoDownloadSession(StandaloneFileNetDriveDownloadSession):
+    def __init__(self, url: str):
+        StandaloneFileNetDriveDownloadSession.__init__(self)
+        self.page_url = url
+
+    def _get_resource_id(self) -> str:
+        split = urlsplit(self.page_url)
+        return f'{split.host}_video_{split.path_segments[2]}'
+
+    def download_to_directory(self, dst_dir: str):
+        session = get_requests_session()
+        url = get_direct_url_for_bunkr_video(self.page_url, session=session)
+        dst_file = os.path.join(dst_dir, urlsplit(url).filename)
+        download_file(url, filename=dst_file, session=session)
+
+    @classmethod
+    def from_url(cls, url: str):
+        return cls(url)
+
+    @classmethod
+    def is_valid_url(cls, url: str) -> bool:
+        split = urlsplit(url)
+        return tuple(split.host.split('.')[-2:-1]) in {('bunkr',), ('bunkrrr',)} and \
+            tuple(split.path_segments[1:2]) == ('v',)
+
+
+class BunkrFileDownloadSession(StandaloneFileNetDriveDownloadSession):
+    def __init__(self, url: str):
+        StandaloneFileNetDriveDownloadSession.__init__(self)
+        self.page_url = url
+
+    def _get_resource_id(self) -> str:
+        split = urlsplit(self.page_url)
+        return f'{split.host}_file_{split.path_segments[2]}'
+
+    def download_to_directory(self, dst_dir: str):
+        session = get_requests_session()
+        url = get_direct_url_for_bunkr_file(self.page_url, session=session)
+        dst_file = os.path.join(dst_dir, urlsplit(url).filename)
+        download_file(url, filename=dst_file, session=session)
+
+    @classmethod
+    def from_url(cls, url: str):
+        return cls(url)
+
+    @classmethod
+    def is_valid_url(cls, url: str) -> bool:
+        split = urlsplit(url)
+        return tuple(split.host.split('.')[-2:-1]) in {('bunkr',), ('bunkrrr',)} and \
+            tuple(split.path_segments[1:2]) == ('d',)
 
 
 class BunkrAlbumDownloadSession(NetDriveDownloadSession):
@@ -96,7 +188,7 @@ class BunkrAlbumDownloadSession(NetDriveDownloadSession):
         def _download_file(file_url, fn):
             dst_file = None
             try:
-                url = get_direct_url_for_bunkr(file_url, session=session)
+                url = get_direct_url_for_bunkr_image(file_url, session=session)
                 dst_file = os.path.join(dst_dir, fn)
                 download_file(url, filename=dst_file, session=session)
             except Exception as err:
@@ -132,4 +224,4 @@ if __name__ == '__main__':
     # print(get_direct_url_for_bunkr('https://bunkr.ax/i/9050b0ac37c5379b258-c6EmqfmL.jpg'))
     session = get_requests_session()
     for title, url in tqdm(get_file_urls_for_bunkr_album('https://bunkr.fi/a/dS6kqYSY', session=session)):
-        print(title, url, get_direct_url_for_bunkr(url, session=session))
+        print(title, url, get_direct_url_for_bunkr_image(url, session=session))

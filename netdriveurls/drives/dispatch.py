@@ -1,7 +1,8 @@
 from typing import Type, List, Union
 
 from .base import NetDriveDownloadSession, ResourceInvalidError, SeparableNetDriveDownloadSession
-from .bunkr import BunkrImageDownloadSession, BunkrAlbumDownloadSession
+from .bunkr import BunkrImageDownloadSession, BunkrAlbumDownloadSession, BunkrVideoDownloadSession, \
+    BunkrFileDownloadSession
 from .cyberdrop import CyberDropArchiveDownloadSession, CyberDropFileDownloadSession
 from .dropbox import DropBoxFileDownloadSession, DropBoxFolderDownloadSession
 from .gofile import GoFileFolderDownloadSession
@@ -33,6 +34,8 @@ register_net_drive(IbbFileDownloadSession)
 register_net_drive(Saint2EmbedDownloadSession)
 register_net_drive(BunkrImageDownloadSession)
 register_net_drive(BunkrAlbumDownloadSession)
+register_net_drive(BunkrVideoDownloadSession)
+register_net_drive(BunkrFileDownloadSession)
 register_net_drive(PixHostGalleryDownloadSession)
 register_net_drive(PixHostShowDownloadSession)
 register_net_drive(ImgBoxImageDownloadSession)

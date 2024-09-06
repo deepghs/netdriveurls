@@ -1,7 +1,7 @@
 from .base import ResourceUnrecognizableError, ResourceInvalidError, ResourceConstraintError, NetDriveDownloadSession, \
     StandaloneFileNetDriveDownloadSession, SeparableNetDriveDownloadSession
 from .bunkr import BunkrAlbumDownloadSession, BunkrImageDownloadSession, get_file_urls_for_bunkr_album, \
-    get_direct_url_for_bunkr
+    get_direct_url_for_bunkr_image, BunkrVideoDownloadSession, BunkrFileDownloadSession
 from .cyberdrop import CyberDropArchiveDownloadSession, CyberDropFileDownloadSession, get_file_links_for_cyberdrop, \
     get_direct_file_link_for_cyberdrop
 from .dispatch import register_net_drive, from_url, sep_from_url
