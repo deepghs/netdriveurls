@@ -115,7 +115,7 @@ class CyberDropArchiveDownloadSession(SeparableNetDriveDownloadSession):
             raise ResourceDownloadError(f'{plural_word(len(errors), "error")} found '
                                         f'when downloading {self.page_url!r} in total.')
 
-    def separate(self) -> List['NetDriveDownloadSession']:
+    def separate(self) -> List[NetDriveDownloadSession]:
         session = get_requests_session()
         return [
             CyberDropFileDownloadSession(file_url)

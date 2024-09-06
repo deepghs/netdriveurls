@@ -118,6 +118,7 @@ class GoFileFolderDownloadSession(NetDriveDownloadSession):
         return f'gofile_folder_{urlsplit(self.page_url).path_segments[2]}'
 
     def download_to_directory(self, dst_dir: str):
+        # TODO: maybe gofile should be seperated
         os.makedirs(dst_dir, exist_ok=True)
         token = _get_guest_token()
         session = get_requests_session()

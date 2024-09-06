@@ -86,7 +86,7 @@ class SeparableNetDriveDownloadSession(NetDriveDownloadSession):
     def download_to_directory(self, dst_dir: str):
         raise NotImplementedError  # pragma: no cover
 
-    def separate(self) -> List['NetDriveDownloadSession']:
+    def separate(self) -> List[NetDriveDownloadSession]:
         raise NotImplementedError  # pragma: no cover
 
     @classmethod
