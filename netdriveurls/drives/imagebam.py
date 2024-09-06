@@ -82,12 +82,3 @@ class ImageBamViewDownloadSession(StandaloneFileNetDriveDownloadSession):
         split = urlsplit(url)
         return tuple(split.host.split('.')[-2:]) == ('imagebam', 'com') and \
             tuple(split.path_segments[1:2]) == ('view',)
-
-
-if __name__ == '__main__':
-    from ditk import logging
-
-    logging.try_init_root(logging.DEBUG)
-    # print(get_direct_url_for_imagebam_image('http://www.imagebam.com/image/e5bd421354406108'))
-    # print(get_direct_url_for_imagebam_image('https://www.imagebam.com/image/0f7e71316357051'))
-    print(get_direct_url_for_imagebam_image('https://www.imagebam.com/view/MEJ5K96'))

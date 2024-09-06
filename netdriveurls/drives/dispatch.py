@@ -13,6 +13,7 @@ from .jpg5su import JPG5SuFileDownloadSession, JPG5SuAlbumDownloadSession
 from .mediafire import MediaFireDownloadSession
 from .pixeldrain import PixelDrainListDownloadSession, PixelDrainFileDownloadSession
 from .pixhost import PixHostShowDownloadSession, PixHostGalleryDownloadSession
+from .postimg import PostImgImageDownloadSession, PostImgGalleryDownloadSession
 from .saint2 import Saint2EmbedDownloadSession
 from ..resolve import resolve_url
 
@@ -45,6 +46,8 @@ register_net_drive(PixelDrainFileDownloadSession)
 register_net_drive(PixelDrainListDownloadSession)
 register_net_drive(ImageBamImageDownloadSession)
 register_net_drive(ImageBamViewDownloadSession)
+register_net_drive(PostImgImageDownloadSession)
+register_net_drive(PostImgGalleryDownloadSession)
 
 
 def from_url(url: str) -> Union[NetDriveDownloadSession, SeparableNetDriveDownloadSession]:

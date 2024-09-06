@@ -17,4 +17,6 @@ from .mediafire import MediaFireLinkInvalidError, MediaFireDownloadSession, get_
 from .pixeldrain import get_list_info_for_pixeldrain, get_direct_url_and_name_for_pixeldrain, \
     PixelDrainFileDownloadSession, PixelDrainListDownloadSession
 from .pixhost import PixHostGalleryDownloadSession, PixHostShowDownloadSession, get_direct_url_for_pixhost
+from .postimg import PostImgImageDownloadSession, get_direct_url_from_postimg_image, get_file_urls_from_postimg_gallery, \
+    PostImgGalleryDownloadSession
 from .saint2 import Saint2EmbedDownloadSession, get_direct_url_for_saint2
