@@ -4,6 +4,8 @@ from .bunkr import BunkrAlbumDownloadSession, BunkrImageDownloadSession, get_fil
     get_direct_url_for_bunkr_image, BunkrVideoDownloadSession, BunkrFileDownloadSession
 from .cyberdrop import CyberDropArchiveDownloadSession, CyberDropFileDownloadSession, get_file_links_for_cyberdrop, \
     get_direct_file_link_for_cyberdrop
+from .cyberfile import get_direct_url_for_cyberfile_file, get_all_direct_urls_for_cyberfile_file, \
+    CyberFileDownloadSession
 from .dispatch import register_net_drive, from_url, sep_from_url
 from .dropbox import DropBoxFolderDownloadSession, DropBoxFileDownloadSession, get_direct_url_for_dropbox
 from .gofile import GoFileFolderDownloadSession, get_direct_urls_for_gofile_folder

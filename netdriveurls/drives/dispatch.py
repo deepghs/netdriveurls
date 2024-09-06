@@ -4,6 +4,7 @@ from .base import NetDriveDownloadSession, ResourceInvalidError, SeparableNetDri
 from .bunkr import BunkrImageDownloadSession, BunkrAlbumDownloadSession, BunkrVideoDownloadSession, \
     BunkrFileDownloadSession
 from .cyberdrop import CyberDropArchiveDownloadSession, CyberDropFileDownloadSession
+from .cyberfile import CyberFileDownloadSession
 from .dropbox import DropBoxFileDownloadSession, DropBoxFolderDownloadSession
 from .gofile import GoFileFolderDownloadSession
 from .ibb import IbbFileDownloadSession
@@ -48,6 +49,7 @@ register_net_drive(ImageBamImageDownloadSession)
 register_net_drive(ImageBamViewDownloadSession)
 register_net_drive(PostImgImageDownloadSession)
 register_net_drive(PostImgGalleryDownloadSession)
+register_net_drive(CyberFileDownloadSession)
 
 
 def from_url(url: str) -> Union[NetDriveDownloadSession, SeparableNetDriveDownloadSession]:
