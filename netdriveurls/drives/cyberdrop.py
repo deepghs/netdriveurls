@@ -1,7 +1,7 @@
 import logging
 import os
 from concurrent.futures import ThreadPoolExecutor
-from typing import Optional
+from typing import Optional, List
 from urllib.parse import urljoin
 
 import requests
@@ -10,7 +10,8 @@ from hbutils.system import urlsplit
 from pyquery import PyQuery as pq
 from tqdm import tqdm
 
-from .base import StandaloneFileNetDriveDownloadSession, NetDriveDownloadSession, ResourceDownloadError
+from .base import StandaloneFileNetDriveDownloadSession, NetDriveDownloadSession, ResourceDownloadError, \
+    SeparableNetDriveDownloadSession
 from ..utils import get_requests_session, download_file
 
 
@@ -75,7 +76,7 @@ class CyberDropFileDownloadSession(StandaloneFileNetDriveDownloadSession):
             tuple(split.path_segments[1:2]) == ('f',)
 
 
-class CyberDropArchiveDownloadSession(NetDriveDownloadSession):
+class CyberDropArchiveDownloadSession(SeparableNetDriveDownloadSession):
     def __init__(self, url):
         NetDriveDownloadSession.__init__(self)
         self.page_url = url
@@ -113,6 +114,13 @@ class CyberDropArchiveDownloadSession(NetDriveDownloadSession):
         if errors:
             raise ResourceDownloadError(f'{plural_word(len(errors), "error")} found '
                                         f'when downloading {self.page_url!r} in total.')
+
+    def separate(self) -> List['NetDriveDownloadSession']:
+        session = get_requests_session()
+        return [
+            CyberDropFileDownloadSession(file_url)
+            for _, file_url in get_file_links_for_cyberdrop(self.page_url, session=session)
+        ]
 
     @classmethod
     def from_url(cls, url: str):

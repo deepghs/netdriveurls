@@ -1,5 +1,6 @@
 import os
 import shutil
+from typing import List
 
 from hbutils.system import TemporaryDirectory
 
@@ -67,6 +68,25 @@ class StandaloneFileNetDriveDownloadSession(NetDriveDownloadSession):
                                               f'but {files!r} found in downloaded directory of {self!r}.')
 
     def download_to_directory(self, dst_dir: str):
+        raise NotImplementedError  # pragma: no cover
+
+    @classmethod
+    def from_url(cls, url: str):
+        raise NotImplementedError  # pragma: no cover
+
+    @classmethod
+    def is_valid_url(cls, url: str) -> bool:
+        raise NotImplementedError  # pragma: no cover
+
+
+class SeparableNetDriveDownloadSession(NetDriveDownloadSession):
+    def _get_resource_id(self) -> str:
+        raise NotImplementedError  # pragma: no cover
+
+    def download_to_directory(self, dst_dir: str):
+        raise NotImplementedError  # pragma: no cover
+
+    def separate(self) -> List['NetDriveDownloadSession']:
         raise NotImplementedError  # pragma: no cover
 
     @classmethod

@@ -1,6 +1,6 @@
 from typing import Type, List, Union
 
-from .base import NetDriveDownloadSession, ResourceInvalidError, StandaloneFileNetDriveDownloadSession
+from .base import NetDriveDownloadSession, ResourceInvalidError, SeparableNetDriveDownloadSession
 from .bunkr import BunkrImageDownloadSession, BunkrAlbumDownloadSession
 from .cyberdrop import CyberDropArchiveDownloadSession, CyberDropFileDownloadSession
 from .dropbox import DropBoxFileDownloadSession, DropBoxFolderDownloadSession
@@ -38,7 +38,7 @@ register_net_drive(ImgBoxImageDownloadSession)
 register_net_drive(ImgBoxGalleryDownloadSession)
 
 
-def from_url(url: str) -> Union[NetDriveDownloadSession, StandaloneFileNetDriveDownloadSession]:
+def from_url(url: str) -> Union[NetDriveDownloadSession, SeparableNetDriveDownloadSession]:
     origin_url, url = url, resolve_url(url)
     for net_drive_cls in _KNOWN_SESSIONS:
         if net_drive_cls.is_valid_url(url):
@@ -46,3 +46,18 @@ def from_url(url: str) -> Union[NetDriveDownloadSession, StandaloneFileNetDriveD
 
     raise ResourceInvalidError(f'Unable to determine the net drive type of {url!r} '
                                f'(resolved from {origin_url}).')
+
+
+def sep_from_url(url: str) -> List[Union[NetDriveDownloadSession]]:
+    obj = from_url(url)
+    queue = [obj]
+    result = []
+    f = 0
+    while f < len(queue):
+        head = queue[f]
+        f += 1
+        if isinstance(head, SeparableNetDriveDownloadSession):
+            queue.extend(head.separate())
+        else:
+            result.append(head)
+    return result

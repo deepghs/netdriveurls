@@ -1,7 +1,7 @@
 import logging
 import os
 from concurrent.futures import ThreadPoolExecutor
-from typing import Optional
+from typing import Optional, List
 from urllib.parse import urljoin
 
 import requests
@@ -10,7 +10,8 @@ from hbutils.system import urlsplit
 from pyquery import PyQuery as pq
 from tqdm import tqdm
 
-from .base import StandaloneFileNetDriveDownloadSession, NetDriveDownloadSession, ResourceDownloadError
+from .base import StandaloneFileNetDriveDownloadSession, NetDriveDownloadSession, ResourceDownloadError, \
+    SeparableNetDriveDownloadSession
 from ..utils import get_requests_session, download_file
 
 
@@ -86,9 +87,9 @@ class JPG5SuFileDownloadSession(StandaloneFileNetDriveDownloadSession):
             tuple(split.path_segments[1:2]) == ('img',)
 
 
-class JPG5SuAlbumDownloadSession(NetDriveDownloadSession):
+class JPG5SuAlbumDownloadSession(SeparableNetDriveDownloadSession):
     def __init__(self, url):
-        NetDriveDownloadSession.__init__(self)
+        SeparableNetDriveDownloadSession.__init__(self)
         self.page_url = url
 
     def _get_resource_id(self) -> str:
@@ -127,6 +128,13 @@ class JPG5SuAlbumDownloadSession(NetDriveDownloadSession):
         if errors:
             raise ResourceDownloadError(f'{plural_word(len(errors), "error")} found '
                                         f'when downloading {self.page_url!r} in total.')
+
+    def separate(self) -> List['NetDriveDownloadSession']:
+        session = get_requests_session()
+        return [
+            JPG5SuFileDownloadSession(file_url)
+            for _, file_url in get_file_urls_for_jpg5su(self.page_url, session=session)
+        ]
 
     @classmethod
     def from_url(cls, url: str):

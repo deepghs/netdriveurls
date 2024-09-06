@@ -11,7 +11,7 @@ from pyquery import PyQuery as pq
 from tqdm import tqdm
 
 from .base import StandaloneFileNetDriveDownloadSession, ResourceInvalidError, NetDriveDownloadSession, \
-    ResourceDownloadError
+    ResourceDownloadError, SeparableNetDriveDownloadSession
 from ..utils import get_requests_session, download_file
 
 
@@ -72,9 +72,9 @@ class ImgBoxImageDownloadSession(StandaloneFileNetDriveDownloadSession):
             len(tuple(filter(bool, split.path_segments))) == 1
 
 
-class ImgBoxGalleryDownloadSession(NetDriveDownloadSession):
+class ImgBoxGalleryDownloadSession(SeparableNetDriveDownloadSession):
     def __init__(self, url: str):
-        NetDriveDownloadSession.__init__(self)
+        SeparableNetDriveDownloadSession.__init__(self)
         self.page_url = url
 
     def _get_resource_id(self) -> str:
@@ -113,6 +113,13 @@ class ImgBoxGalleryDownloadSession(NetDriveDownloadSession):
         if errors:
             raise ResourceDownloadError(f'{plural_word(len(errors), "error")} found '
                                         f'when downloading {self.page_url!r} in total.')
+
+    def separate(self) -> List['NetDriveDownloadSession']:
+        session = get_requests_session()
+        return [
+            ImgBoxImageDownloadSession(file_url)
+            for file_url in get_file_urls_for_imgbox(self.page_url, session=session)
+        ]
 
     @classmethod
     def from_url(cls, url: str):
