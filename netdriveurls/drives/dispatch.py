@@ -6,6 +6,7 @@ from .cyberdrop import CyberDropArchiveDownloadSession, CyberDropFileDownloadSes
 from .dropbox import DropBoxFileDownloadSession, DropBoxFolderDownloadSession
 from .gofile import GoFileFolderDownloadSession
 from .ibb import IbbFileDownloadSession
+from .imgbox import ImgBoxImageDownloadSession, ImgBoxGalleryDownloadSession
 from .jpg5su import JPG5SuFileDownloadSession, JPG5SuAlbumDownloadSession
 from .mediafire import MediaFireDownloadSession
 from .pixhost import PixHostShowDownloadSession, PixHostGalleryDownloadSession
@@ -33,6 +34,8 @@ register_net_drive(BunkrImageDownloadSession)
 register_net_drive(BunkrAlbumDownloadSession)
 register_net_drive(PixHostGalleryDownloadSession)
 register_net_drive(PixHostShowDownloadSession)
+register_net_drive(ImgBoxImageDownloadSession)
+register_net_drive(ImgBoxGalleryDownloadSession)
 
 
 def from_url(url: str) -> Union[NetDriveDownloadSession, StandaloneFileNetDriveDownloadSession]:
