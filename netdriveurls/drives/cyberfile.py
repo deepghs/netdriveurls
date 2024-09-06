@@ -46,6 +46,12 @@ def get_all_direct_urls_for_cyberfile_file(url: str, session: Optional[requests.
     return filename, download_items
 
 
+def get_info_for_cyberfile_folder(url: str, session: Optional[requests.Session] = None):
+    session = session or get_requests_session()
+    resp = session.get(url)
+    resp.raise_for_status()
+
+
 def get_direct_url_for_cyberfile_file(url: str, session: Optional[requests.Session] = None):
     filename, download_items = get_all_direct_urls_for_cyberfile_file(url, session=session)
     if not download_items:
@@ -74,7 +80,7 @@ class CyberFileDownloadSession(StandaloneFileNetDriveDownloadSession):
     @classmethod
     def is_valid_url(cls, url: str) -> bool:
         split = urlsplit(url)
-        return tuple(split.host.split('.')[-2:]) == ('cyberfile', 'me') and \
+        return tuple(split.host.split('.')[-2:-1]) == ('cyberfile',) and \
             tuple(split.path_segments[1:2]) not in {('folder',), ('share',)} and \
             len(split.path_segments) >= 2
 

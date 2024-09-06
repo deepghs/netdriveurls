@@ -10,6 +10,7 @@ from .gofile import GoFileFolderDownloadSession
 from .ibb import IbbFileDownloadSession
 from .imagebam import ImageBamViewDownloadSession, ImageBamImageDownloadSession
 from .imgbox import ImgBoxImageDownloadSession, ImgBoxGalleryDownloadSession
+from .imgvb import ImgvbImageDownloadSession
 from .jpg5su import JPG5SuFileDownloadSession, JPG5SuAlbumDownloadSession
 from .mediafire import MediaFireDownloadSession
 from .pixeldrain import PixelDrainListDownloadSession, PixelDrainFileDownloadSession
@@ -50,6 +51,7 @@ register_net_drive(ImageBamViewDownloadSession)
 register_net_drive(PostImgImageDownloadSession)
 register_net_drive(PostImgGalleryDownloadSession)
 register_net_drive(CyberFileDownloadSession)
+register_net_drive(ImgvbImageDownloadSession)
 
 
 def from_url(url: str) -> Union[NetDriveDownloadSession, SeparableNetDriveDownloadSession]:

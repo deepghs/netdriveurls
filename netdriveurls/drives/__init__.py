@@ -13,6 +13,7 @@ from .ibb import IbbFileDownloadSession
 from .imagebam import get_direct_url_for_imagebam_image, ImageBamImageDownloadSession, ImageBamViewDownloadSession
 from .imgbox import ImgBoxGalleryDownloadSession, ImgBoxImageDownloadSession, ImgBoxResourceInvalidError, \
     get_file_urls_for_imgbox, get_direct_url_for_imgbox
+from .imgvb import ImgvbImageDownloadSession
 from .jpg5su import JPG5SuFileDownloadSession, get_direct_url_for_jpg5su, JPG5SuAlbumDownloadSession, \
     get_file_urls_for_jpg5su, get_og_image_url
 from .mediafire import MediaFireLinkInvalidError, MediaFireDownloadSession, get_direct_url_and_filename_for_mediafire
